@@ -1,47 +1,68 @@
-#include <stdio.h>
-#include "process.h"
-#include "scheduler.h"
 #include "logger.h"
 #include "common.h"
+#include "message.h"
+#include <stdio.h>
+#include <sys/msg.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
 int main() {
 
-  FILE *fp;
-  fp = fopen("processes.txt", "r");
-
-  if (fp == NULL) {
-    printf("Error opening file.\n");
-    return 1;
+  // Creating a message queue to communicate with the scheduler
+  key_t key = 1234;
+  int msgid = msgget(key, 0666 | IPC_CREAT);
+  if (msgid == -1) {
+    perror("Error in creating message queue");
+    return -1;
   }
 
-  // Create process size based on file size
-  Process process_array[10000];
-  int i = 0;
-  while (fscanf(fp, "%s %d", process_array[i].name, &process_array[i].priority) != EOF) i++;
+  printf("Message queue created with id %d\n", msgid);
 
-  fclose(fp);
+  // Creating read process with fork
+  pid_t pid = fork();
 
-  printf("Printing process array from file:\n");
-  // Print process array
-  for (int j = 0; j < i; j++) print_process(&process_array[j]);
+  if(pid == 0){
+    // Reading processes.txt file
+    FILE *file = fopen("processes.txt", "r");
 
-  printf("\nPrinting fake execute process\n");
-  // Execute process array
-  for (int j = 0; j < i; j++) execute_process(&process_array[j]);
+    // Read each line every 2 seconds and add to message queue
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+      // Remove newline character
+      line[strcspn(line, "\n")] = 0;
 
-  Scheduler scheduler;
+      // split line into process name and priority
+      char *process_name = strtok(line, " ");
+      char *priority = strtok(NULL, " ");
 
-  // Initialize scheduler
-  init_scheduler(&scheduler, "lottery scheduler", DEFAULT_QUANTUM, TIME_TO_READY, process_array);
+      // Create message struct
+      struct message message;
+      message.type = 0;
+      strcpy(message.process_name, process_name);
+      message.priority = atoi(priority);
 
-  printf("\nPrinting scheduler info\n");
-  // Print scheduler
-  printf("Scheduler: %s, quantum: %d, time to ready: %d \n", scheduler.name, scheduler.quantum, scheduler.time);
+      printf("Sending message to queue: %s %d\n", message.process_name, message.priority);
 
-  printf("\nPrinting processes inside scheduler \n");
+      // Send message to the queue
+      msgsnd(msgid, &message, sizeof(struct message) - sizeof(long), 0);
 
-  // Print processes inside scheduler
-  for (int j = 0; j < i; j++) print_process(&scheduler.processes[j]);
+      // Wait 2 seconds
+      sleep(2);
+    }
+
+    // Send end of message to the queue
+    printf("End process\n");
+    struct message end_message;
+    end_message.type = 1;
+    end_message.priority = 0;
+    strcpy(end_message.process_name, "end");
+    msgsnd(msgid, &end_message, sizeof(struct message) - sizeof(long), 0);
+    exit(0);
+  }
+  
+  // Creating execl process for scheduler
+  execl("./scheduler", "scheduler", NULL);
 
   return 0;
 }

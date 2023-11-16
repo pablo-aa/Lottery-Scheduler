@@ -1,25 +1,13 @@
-# Executable
-TARGET = prog
+CC=gcc
+CFLAGS=-Wall -I include
 
-# Compilator
-CC = gcc
+all: prog scheduler
 
-# Compilator flags
-CFLAGS = -Wall
+prog: src/logger.c src/main.c src/process.c
+	$(CC) $(CFLAGS) -o prog src/logger.c src/main.c src/process.c
 
-# Files directories
-SRC_DIR = src
-INC_DIR = include
+scheduler: src/scheduler.c
+	$(CC) $(CFLAGS) -o scheduler src/scheduler.c
 
-# Main files list
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-
-# Generate executable
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) -I $(INC_DIR) -o $@ $^
-
-# clean executable
 clean:
-	rm -f $(TARGET)
-
-.PHONY: clean
+	rm -f prog scheduler
