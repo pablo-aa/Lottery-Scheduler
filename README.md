@@ -12,8 +12,8 @@ Este projeto tem como objetivo a implementação de um escalonador de processos,
 | Nome | Matrícula |
 | ---- | --------- |
 | Pablo Araujo | 19/0049901 |
-| Samuel||
-| Eduardo| 17/0102254|
+| Samuel| 16/0144647 |
+| Eduardo| 17/0102254 |
 
 ## Projeto
 
