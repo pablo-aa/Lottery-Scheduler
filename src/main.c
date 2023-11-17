@@ -38,7 +38,7 @@ int main() {
 
       // Create message struct
       struct message message;
-      message.type = 0;
+      message.pid = getpid();
       strcpy(message.process_name, process_name);
       message.priority = atoi(priority);
 
@@ -54,7 +54,7 @@ int main() {
     // Send end of message to the queue
     printf("End process\n");
     struct message end_message;
-    end_message.type = 1;
+    end_message.pid = getpid();
     end_message.priority = 0;
     strcpy(end_message.process_name, "end");
     msgsnd(msgid, &end_message, sizeof(struct message) - sizeof(long), 0);

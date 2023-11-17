@@ -4,10 +4,11 @@
 #include <stdlib.h>
 
 // Process implementations
-Process* create_process(char *name, int number_of_tickets) {
+Process* create_process(char *name, int number_of_tickets, int is_new) {
     Process *process = malloc(sizeof(Process));
     strcpy(process->name, name);
     process->number_of_tickets = number_of_tickets;
+    process->is_new = is_new;
     process->next = NULL;
     return process;
 }
@@ -54,8 +55,7 @@ void remove_process(Process **head, Process *process) {
 // Lottery scheduler implementations
 // Implementations to interact with the lottery scheduler, generating tickets and selecting a winner
 
-// fake select process function
+// fake select process function - returns the first process in the list
 Process* select_process(Process *process_list) {
-    Process *process = process_list;
-    return process;
+    return process_list;
 }

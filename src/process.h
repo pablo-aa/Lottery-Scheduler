@@ -10,6 +10,7 @@ struct Process{
     int number_of_tickets; // number of tickets based on priority
     int received_tickets[4]; // received tickets in lottery
     int pid;
+    int is_new; // 1 if process is new, 0 if process is not new
     time_t ready_time; // time when process is ready
     time_t start_time; // time when process starts
     time_t end_time; // time when process ends
@@ -19,7 +20,7 @@ struct Process{
 
 // Process functions
 // Create new process
-Process *create_process(char *name, int number_of_tickets);
+Process *create_process(char *name, int number_of_tickets, int is_new);
 // Add process to the end of the list
 void add_process(Process **head, Process *process);
 // Remove process from the list
