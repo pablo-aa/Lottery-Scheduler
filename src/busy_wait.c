@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "common.h"
 
-// Process with time around 30 seconds
+/**
+    * This file is responsible to execute the busy wait process.
+    * 
+    * @file busy_wait.c
+*/
+
 int main(){
-    printf("Starting busy_wait.c\n");
-    // time_t start, end;
-    // double elapsed;
-    // time(&start);
-    for(long i = 0; i < 24000000000; i++){}
-    // time(&end);
-    // elapsed = difftime(end, start);
-    // printf("Time elapsed: %f\n", elapsed);
+    if(VERBOSE){
+        printf("Starting busy_wait.c\n");
+    }
+    // Process with time around 30 seconds
+    for(long i = 0; i < 23000000000; i++){}
     return 0;
 }

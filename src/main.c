@@ -7,17 +7,28 @@
 #include "common.h"
 #include "message.h"
 
+/**
+    * This is the main file of the lottery scheduler program.
+    * It contains the entry point of the program and the main logic.
+    * 
+    * @file main.c
+*/
+
 int main() {
 
+  printf("Starting main.c...\n");
+  printf("VERBOSE: %d\n", VERBOSE);
+  printf("\nTo get more information during the execution, set VERBOSE = 1 in include/common.h\n\n");
+
   // Creating a message queue to communicate with the scheduler
-  key_t key = 1234;
+  key_t key = MSG_QUEUE_KEY;
   int msgid = msgget(key, 0666 | IPC_CREAT);
   if (msgid == -1) {
     perror("Error in creating message queue");
     return -1;
   }
 
-  printf("Message queue created with id %d\n", msgid);
+  if(VERBOSE){ printf("Message queue created with id %d\n", msgid); }
 
   // Creating read process with fork
   pid_t pid = fork();
@@ -41,18 +52,19 @@ int main() {
       message.pid = getpid();
       strcpy(message.process_name, process_name);
       message.priority = atoi(priority);
+      message.ready_time = time(NULL);
 
-      printf("Sending message to queue: %s %d\n", message.process_name, message.priority);
+      if(VERBOSE){ printf("Sending message to queue: %s %d\n", message.process_name, message.priority); }
 
       // Send message to the queue
       msgsnd(msgid, &message, sizeof(struct message) - sizeof(long), 0);
 
       // Wait 2 seconds
-      sleep(2);
+      sleep(TIME_TO_READY);
     }
 
     // Send end of message to the queue
-    printf("End process\n");
+    if(VERBOSE){ printf("End process\n"); }
     struct message end_message;
     end_message.pid = getpid();
     end_message.priority = 0;
