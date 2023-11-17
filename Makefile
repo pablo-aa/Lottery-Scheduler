@@ -6,8 +6,8 @@ all: prog scheduler
 prog: src/logger.c src/main.c src/process.c
 	$(CC) $(CFLAGS) -o prog src/logger.c src/main.c src/process.c
 
-scheduler: src/scheduler.c
-	$(CC) $(CFLAGS) -o scheduler src/scheduler.c
+scheduler: src/scheduler.c src/process.c
+	$(CC) $(CFLAGS) -o scheduler src/scheduler.c src/process.c
 
 clean:
 	rm -f prog scheduler

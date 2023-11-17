@@ -1,11 +1,11 @@
-#include "logger.h"
-#include "common.h"
-#include "message.h"
 #include <stdio.h>
 #include <sys/msg.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "logger.h"
+#include "common.h"
+#include "message.h"
 
 int main() {
 
